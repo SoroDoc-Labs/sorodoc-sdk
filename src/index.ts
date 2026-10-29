@@ -4,6 +4,7 @@ export * from "./wasm.js";
 export * from "./parser.js";
 export * from "./extract.js";
 export * from "./rpc.js";
+export * from "./validator.js";
 export * from "./generators/markdown.js";
 export * from "./generators/typescript.js";
 export * from "./generators/openapi.js";
