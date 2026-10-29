@@ -8,6 +8,28 @@ import {
 /**
  * Maps a Soroban AST TypeDescriptor to a TypeScript type string.
  */
+const TS_RESERVED_WORDS = new Set([
+  "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete",
+  "do", "else", "enum", "export", "extends", "false", "finally", "for", "function", "if",
+  "import", "in", "instanceof", "new", "null", "return", "super", "switch", "this", "throw",
+  "true", "try", "typeof", "var", "void", "while", "with", "yield", "let", "static", "interface",
+  "type", "package", "private", "protected", "public", "any", "unknown", "never"
+]);
+
+export function sanitizeParamName(name: string): string {
+  if (TS_RESERVED_WORDS.has(name) || !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(name)) {
+    return `_${name}`;
+  }
+  return name;
+}
+
+export function sanitizeFieldName(name: string): string {
+  if (!/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(name)) {
+    return JSON.stringify(name);
+  }
+  return name;
+}
+
 export function formatTypeScriptType(type: TypeDescriptor): string {
   switch (type.kind) {
     case "primitive":
@@ -119,7 +141,7 @@ export function generateTypeScript(ast: ContractSpecAST, contractName = "Contrac
       if (f.doc) {
         lines.push(`  /** ${f.doc.replace(/\n/g, " ")} */`);
       }
-      lines.push(`  ${f.name}: ${formatTypeScriptType(f.type)};`);
+      lines.push(`  ${sanitizeFieldName(f.name)}: ${formatTypeScriptType(f.type)};`);
     }
     lines.push("}", "");
   }
@@ -153,7 +175,9 @@ export function generateTypeScript(ast: ContractSpecAST, contractName = "Contrac
     if (fn.doc) {
       lines.push(`  /** ${fn.doc.replace(/\n/g, " ")} */`);
     }
-    const params = fn.inputs.map((i: FunctionParamDoc) => `${i.name}: ${formatTypeScriptType(i.type)}`).join(", ");
+    const params = fn.inputs
+      .map((i: FunctionParamDoc) => `${sanitizeParamName(i.name)}: ${formatTypeScriptType(i.type)}`)
+      .join(", ");
     let returnType = "void";
     if (fn.outputs.length === 1) {
       returnType = formatTypeScriptType(fn.outputs[0]!);

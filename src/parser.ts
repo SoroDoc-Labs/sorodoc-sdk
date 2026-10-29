@@ -15,7 +15,7 @@ import {
   ContractEventDoc,
   TypeDescriptor,
 } from "./ast.js";
-import { UnsupportedSpecEntryError } from "./errors.js";
+import { UnsupportedSpecEntryError, MalformedWasmError } from "./errors.js";
 
 /**
  * Normalizes an XDR ScSpecTypeDef into a clean AST TypeDescriptor.
@@ -130,10 +130,14 @@ export function parseSpecEntriesFromBuffers(specBuffers: Buffer[]): xdr.ScSpecEn
   for (const buf of specBuffers) {
     const reader = new Reader(buf);
     while (reader.remaining > 0) {
-      // ScSpecEntry schema._read decodes variable-length consecutive entries
-      const rawEntry = (xdr.ScSpecEntry as any).schema._read(reader);
-      const entry = (xdr.ScSpecEntry as any).fromXdrObject(rawEntry) as xdr.ScSpecEntry;
-      entries.push(entry);
+      try {
+        // ScSpecEntry schema._read decodes variable-length consecutive entries
+        const rawEntry = (xdr.ScSpecEntry as any).schema._read(reader);
+        const entry = (xdr.ScSpecEntry as any).fromXdrObject(rawEntry) as xdr.ScSpecEntry;
+        entries.push(entry);
+      } catch (err) {
+        throw new MalformedWasmError(`Failed to decode XDR ScSpecEntry: ${(err as Error).message}`);
+      }
     }
   }
 

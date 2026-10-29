@@ -75,17 +75,21 @@ export function extractSpecBytesFromWasm(wasmBuffer: Buffer): Buffer[] {
 
     const sectionEnd = offset + sectionSize;
 
-    // Custom section (ID 0)
+// Custom section (ID 0)
     if (sectionId === 0) {
       const sectionOffset = offset;
       const { value: nameLength, bytesRead: nameBytesRead } = readVarUint(wasmBuffer, sectionOffset);
       const nameStart = sectionOffset + nameBytesRead;
       const nameEnd = nameStart + nameLength;
 
-      if (nameEnd <= sectionEnd) {
-        const sectionName = wasmBuffer.subarray(nameStart, nameEnd).toString("utf8");
-        if (sectionName === TARGET_SECTION_NAME) {
-          const payload = wasmBuffer.subarray(nameEnd, sectionEnd);
+      if (nameEnd > sectionEnd) {
+        throw new MalformedWasmError("Custom section name length exceeds section boundary.");
+      }
+
+      const sectionName = wasmBuffer.subarray(nameStart, nameEnd).toString("utf8");
+      if (sectionName === TARGET_SECTION_NAME) {
+        const payload = wasmBuffer.subarray(nameEnd, sectionEnd);
+        if (payload.length > 0) {
           specBuffers.push(Buffer.from(payload));
         }
       }
