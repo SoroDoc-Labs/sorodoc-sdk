@@ -7,6 +7,7 @@ import { RpcFetchError, UnsupportedExecutableError } from "./errors.js";
 export interface FetchSpecRpcOptions {
   rpcUrl: string;
   contractId: string;
+  allowHttp?: boolean;
 }
 
 /**
@@ -18,8 +19,13 @@ export interface FetchSpecRpcOptions {
  * 4. Extracts and normalizes the embedded contract specification.
  */
 export async function fetchSpecFromRpc(options: FetchSpecRpcOptions): Promise<ContractSpecAST> {
-  const { rpcUrl, contractId } = options;
-  const server = new rpc.Server(rpcUrl);
+  const { rpcUrl, contractId, allowHttp } = options;
+  let server: rpc.Server;
+  try {
+    server = new rpc.Server(rpcUrl, { allowHttp: allowHttp ?? rpcUrl.startsWith("http://") });
+  } catch (err) {
+    throw new RpcFetchError(`Failed to initialize Soroban RPC client: ${(err as Error).message}`, err);
+  }
 
   let contractAddress: Address;
   try {
