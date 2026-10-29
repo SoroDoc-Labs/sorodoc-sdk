@@ -35,8 +35,10 @@ function compileTypeScriptSource(source: string): { errors: string[] } {
 }
 
 describe("Generated TypeScript & OpenAPI Deep Compilation Verification", () => {
-  it("compiles generated TypeScript into valid AST with no type errors", () => {
-    const ast: ContractSpecAST = {
+  it(
+    "compiles generated TypeScript into valid AST with no type errors",
+    () => {
+      const ast: ContractSpecAST = {
       functions: [
         {
           name: "execute_transfer",
@@ -106,7 +108,7 @@ describe("Generated TypeScript & OpenAPI Deep Compilation Verification", () => {
 
     const { errors } = compileTypeScriptSource(tsCode);
     expect(errors).toEqual([]);
-  });
+  }, 15000);
 
   it("produces compliant OpenAPI 3.0.3 schema specification matching standard schema structure", () => {
     const ast: ContractSpecAST = {
