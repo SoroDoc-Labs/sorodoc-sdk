@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import * as ts from "typescript";
-import { xdr } from "@stellar/stellar-sdk";
 import { generateTypeScript } from "../src/generators/typescript.js";
 import { generateOpenApi } from "../src/generators/openapi.js";
 import { ContractSpecAST } from "../src/ast.js";
