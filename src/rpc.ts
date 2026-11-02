@@ -56,17 +56,18 @@ export async function fetchSpecFromRpc(options: FetchSpecRpcOptions): Promise<Co
   }
 
   const instanceEntry = entries[0];
-  const ledgerEntryData = instanceEntry.val;
-  const contractData = (ledgerEntryData as any).contractData();
-  const instanceVal = contractData.val();
+  const ledgerEntryData: any = instanceEntry.val;
+  const contractData = typeof ledgerEntryData.contractData === "function" ? ledgerEntryData.contractData() : ledgerEntryData.contractData;
+  const instanceVal = typeof contractData.val === "function" ? contractData.val() : contractData.val;
 
-  if (instanceVal.switch().name !== "scvContractInstance") {
-    throw new RpcFetchError(`Expected scvContractInstance, received: ${instanceVal.switch().name}`);
+  const instanceValType = typeof instanceVal.switch === "function" ? instanceVal.switch().name : instanceVal.type;
+  if (instanceValType !== "scvContractInstance") {
+    throw new RpcFetchError(`Expected scvContractInstance, received: ${instanceValType}`);
   }
 
-  const instance = instanceVal.instance();
-  const executable = instance.executable();
-  const execType = executable.switch().name;
+  const instance = typeof instanceVal.instance === "function" ? instanceVal.instance() : instanceVal.instance;
+  const executable = typeof instance.executable === "function" ? instance.executable() : instance.executable;
+  const execType = typeof executable.switch === "function" ? executable.switch().name : executable.type;
 
   if (execType === "contractExecutableStellarAsset") {
     throw new UnsupportedExecutableError(
@@ -78,7 +79,8 @@ export async function fetchSpecFromRpc(options: FetchSpecRpcOptions): Promise<Co
     throw new UnsupportedExecutableError(`Unsupported contract executable type: ${execType}`);
   }
 
-  const wasmHash = executable.wasmHash();
+  const rawWasmHash = typeof executable.wasmHash === "function" ? executable.wasmHash() : executable.wasmHash;
+  const wasmHash = Buffer.from((rawWasmHash as any).value ?? rawWasmHash);
 
   // 2. Ledger key for contract code
   const contractCodeKey = xdr.LedgerKey.contractCode(
@@ -100,8 +102,11 @@ export async function fetchSpecFromRpc(options: FetchSpecRpcOptions): Promise<Co
   }
 
   const codeEntry = codeEntries[0];
-  const codeVal = (codeEntry.val as any).contractCode();
-  const codeBody = codeVal.code();
+  const codeVal: any = typeof (codeEntry.val as any).contractCode === "function"
+    ? (codeEntry.val as any).contractCode()
+    : (codeEntry.val as any).contractCode;
+  const rawCode = typeof codeVal.code === "function" ? codeVal.code() : codeVal.code;
+  const codeBody = Buffer.from(rawCode.value ?? rawCode);
 
   const wasmBuffer = Buffer.from(codeBody);
   const specBuffers = extractSpecBytesFromWasm(wasmBuffer);
