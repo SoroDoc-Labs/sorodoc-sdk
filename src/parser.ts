@@ -64,19 +64,22 @@ export function normalizeTypeDef(typeDef: xdr.ScSpecTypeDef): TypeDescriptor {
       return { kind: "primitive", name: "muxedAddress" };
 
     case "scSpecTypeBytesN": {
-      const bytesN = (typeDef as any).bytesN?.() || (typeDef as any).bytesN;
+      const target = typeDef as any;
+      const bytesN = typeof target.bytesN === "function" ? target.bytesN() : target.bytesN;
       const n = typeof bytesN?.n === "function" ? bytesN.n() : Number(bytesN?.n ?? 0);
       return { kind: "bytesN", n };
     }
 
     case "scSpecTypeOption": {
-      const opt = (typeDef as any).option?.() || (typeDef as any).option;
+      const target = typeDef as any;
+      const opt = typeof target.option === "function" ? target.option() : target.option;
       const innerTypeDef = typeof opt?.valueType === "function" ? opt.valueType() : opt?.valueType;
       return { kind: "option", valueType: normalizeTypeDef(innerTypeDef) };
     }
 
     case "scSpecTypeResult": {
-      const res = (typeDef as any).result?.() || (typeDef as any).result;
+      const target = typeDef as any;
+      const res = typeof target.result === "function" ? target.result() : target.result;
       const okType = typeof res?.okType === "function" ? res.okType() : res?.okType;
       const errorType = typeof res?.errorType === "function" ? res.errorType() : res?.errorType;
       return {
@@ -87,13 +90,15 @@ export function normalizeTypeDef(typeDef: xdr.ScSpecTypeDef): TypeDescriptor {
     }
 
     case "scSpecTypeVec": {
-      const vec = (typeDef as any).vec?.() || (typeDef as any).vec;
+      const target = typeDef as any;
+      const vec = typeof target.vec === "function" ? target.vec() : target.vec;
       const elementType = typeof vec?.elementType === "function" ? vec.elementType() : vec?.elementType;
       return { kind: "vec", elementType: normalizeTypeDef(elementType) };
     }
 
     case "scSpecTypeMap": {
-      const map = (typeDef as any).map?.() || (typeDef as any).map;
+      const target = typeDef as any;
+      const map = typeof target.map === "function" ? target.map() : target.map;
       const keyType = typeof map?.keyType === "function" ? map.keyType() : map?.keyType;
       const valueType = typeof map?.valueType === "function" ? map.valueType() : map?.valueType;
       return {
@@ -104,14 +109,16 @@ export function normalizeTypeDef(typeDef: xdr.ScSpecTypeDef): TypeDescriptor {
     }
 
     case "scSpecTypeTuple": {
-      const tuple = (typeDef as any).tuple?.() || (typeDef as any).tuple;
+      const target = typeDef as any;
+      const tuple = typeof target.tuple === "function" ? target.tuple() : target.tuple;
       const elementTypesRaw = typeof tuple?.valueTypes === "function" ? tuple.valueTypes() : tuple?.valueTypes || [];
       const elementTypes = (elementTypesRaw as xdr.ScSpecTypeDef[]).map((t) => normalizeTypeDef(t));
       return { kind: "tuple", elementTypes };
     }
 
     case "scSpecTypeUdt": {
-      const udt = (typeDef as any).udt?.() || (typeDef as any).udt;
+      const target = typeDef as any;
+      const udt = typeof target.udt === "function" ? target.udt() : target.udt;
       const name = typeof udt?.name === "function" ? udt.name().toString() : udt?.name?.toString() || "";
       return { kind: "udt", name };
     }
