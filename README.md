@@ -18,11 +18,23 @@ The foundational TypeScript SDK for the **SoroDoc** ecosystem. Extracts, normali
 npm install @sorodoc/sdk
 ```
 
+## SoroDoc Ecosystem
+
+- **`@sorodoc/sdk`**: Foundational parser and generator engine (this package).
+- **`sorodoc-cli`**: Command-line developer tool for local CI/CD documentation generation and local previews (`npm install -g sorodoc-cli` or `npx sorodoc`).
+- **`sorodoc-dashboard`**: Web explorer for drag-and-drop contract inspection and live RPC spec fetching.
+
 ## Quick Start
 
 ```typescript
 import * as fs from "fs";
-import { extractSpecFromWasm, generateMarkdown, generateTypeScript, generateOpenApi } from "@sorodoc/sdk";
+import { 
+  extractSpecFromWasm, 
+  generateMarkdown, 
+  generateTypeScript, 
+  generateOpenApi,
+  validateContractSpec 
+} from "@sorodoc/sdk";
 
 // 1. Read Soroban contract WASM binary
 const wasmBuffer = fs.readFileSync("./contract.wasm");
@@ -30,15 +42,30 @@ const wasmBuffer = fs.readFileSync("./contract.wasm");
 // 2. Extract and normalize specification AST
 const ast = extractSpecFromWasm(wasmBuffer);
 
-// 3. Generate Markdown documentation
+// 3. Validate contract specification completeness
+const validation = validateContractSpec(ast);
+console.log(`Contract functions: ${validation.stats.functionCount}`);
+
+// 4. Generate Markdown documentation
 const markdown = generateMarkdown(ast, { contractName: "TokenContract" });
 console.log(markdown);
 
-// 4. Generate TypeScript client interfaces
+// 5. Generate TypeScript client interfaces
 const tsClient = generateTypeScript(ast, "TokenClient");
 
-// 5. Generate OpenAPI 3.0 specification
+// 6. Generate OpenAPI 3.0 specification
 const openapiSpec = generateOpenApi(ast, { title: "Token Contract Interface" });
+```
+
+## Soroban RPC Spec Retrieval
+
+```typescript
+import { fetchSpecFromRpc } from "@sorodoc/sdk";
+
+const ast = await fetchSpecFromRpc({
+  rpcUrl: "https://soroban-testnet.stellar.org",
+  contractId: "CA3D5KRYM6CB7OWQ6TWYRR3Z4T7GNZLKERYNZGGA5CVUPJSIISDU4RNK",
+});
 ```
 
 ## Testing & Quality
