@@ -1,0 +1,38 @@
+## Description
+
+Please include a summary of the change, relevant motivation, and context.
+
+Fixes #(issue)
+
+## Type of Change
+
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Documentation update
+- [ ] Security / Governance hardening
+
+## Implementation Details
+
+- 
+
+## How Has This Been Tested?
+
+- [ ] Unit tests added/updated (`npm test`)
+- [ ] Typecheck verified (`npm run typecheck`)
+- [ ] Integration build verified (`npm run build`)
+- [ ] Manual test across supported environments
+
+## Security Considerations
+
+- [ ] Does this PR introduce new dependencies?
+- [ ] Does it execute external or untrusted code?
+- [ ] Are input parameters and file paths sanitized?
+
+## Checklist
+
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to documentation
+- [ ] My changes generate no new warnings or typecheck errors

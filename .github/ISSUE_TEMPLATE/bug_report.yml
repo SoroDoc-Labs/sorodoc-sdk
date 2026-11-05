@@ -1,0 +1,55 @@
+name: Bug Report
+description: Create a report to help us improve SoroDoc
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please do not report security vulnerabilities here (use GitHub Private Vulnerability Reporting under the Security tab).
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of SoroDoc are you using?
+      placeholder: "e.g., 0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating System, Node.js version, architecture
+      placeholder: "e.g., Ubuntu 24.04, Node v22.13.0, x64"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Parse WASM file '...'
+        2. Run 'sorodoc generate ...'
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Log Output
+      description: Please copy and paste any relevant logs or terminal output.
+      render: shell
