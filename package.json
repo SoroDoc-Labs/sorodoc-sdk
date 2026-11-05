@@ -42,7 +42,7 @@
     "@stellar/stellar-sdk": "^17.4.0"
   },
   "devDependencies": {
-    "@types/node": "^22.13.1",
+    "@types/node": "^26.6.6",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
     "eslint": "^9.20.1",
